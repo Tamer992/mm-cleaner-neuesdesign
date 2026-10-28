@@ -179,3 +179,16 @@ if (ref) {
   } catch { /* privater Modus: ohne Linie weiter */ }
   const y = $("#jahr"); if (y) y.textContent = new Date().getFullYear();
 }
+
+/* Anrufknopf: erst nach dem Startbereich, nicht im Kontaktbereich */
+{
+  const call = $(".callbar");
+  if (call) {
+    const seen = new Set();
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
+      call.classList.toggle("is-off", seen.size > 0);
+    }, { threshold: 0.4 });
+    [$(".hero"), $("#kontakt")].forEach((s) => s && io.observe(s));
+  }
+}
