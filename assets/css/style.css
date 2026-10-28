@@ -490,20 +490,27 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); }
 .qr figcaption { margin-top: 0.7rem; max-width: 148px; font-size: 0.85rem; line-height: 1.4; color: var(--ink-2); }
 @media (hover: hover) and (pointer: fine) { .qr { display: block; } }
 
-/* Anrufleiste am Handy, Aufbau wie bei ihreitrn.de: Anrufen mit Nummer, daneben WhatsApp, fährt erst nach dem Start ein */
+/* Anruf und WhatsApp am Handy: schwebende Ablage mit zwei Knöpfen (Vorbild ihreitrn.de), fährt nach dem Startbereich ein */
 .callbar { display: none; }
 @media not ((hover: hover) and (pointer: fine)) {
-  body { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom)); }
+  body { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
   .callbar {
-    position: fixed; inset: auto 0 0; z-index: 35; display: grid; grid-template-columns: 2fr 1fr;
-    padding-bottom: env(safe-area-inset-bottom); background: #123a5c;
-    transition: transform 300ms var(--ease-out);
+    position: fixed; left: 0.6rem; right: 0.6rem; bottom: calc(0.6rem + env(safe-area-inset-bottom)); z-index: 35;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.5rem;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 26px;
+    box-shadow: 0 14px 34px -14px rgb(12 23 33 / 0.4), 0 2px 8px rgb(12 23 33 / 0.1);
+    transition: transform 320ms var(--ease-out), opacity 320ms var(--ease-out), visibility 0s;
   }
-  .callbar a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 3.5rem; color: #fff; text-decoration: none; font-weight: 600; -webkit-tap-highlight-color: transparent; transition: background-color 160ms ease; }
-  .callbar a:active { background: rgb(255 255 255 / 0.12); }
-  .callbar .nummer { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .callbar__wa { border-left: 1px solid rgb(255 255 255 / 0.2); }
-  .callbar.is-off { transform: translateY(110%); }
+  .callbar a {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 3.4rem; border-radius: 18px;
+    font-weight: 650; font-size: 1.08rem; text-decoration: none; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+    transition: transform 160ms var(--ease-out), background-color 160ms ease;
+  }
+  .callbar a:active { transform: scale(0.97); }
+  .callbar__anruf { background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 18px -10px rgb(25 95 155 / 0.8); }
+  .callbar__wa { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+  .callbar__ico { flex: none; width: 22px; height: 22px; }
+  .callbar.is-off { transform: translateY(130%); opacity: 0; visibility: hidden; transition: transform 320ms var(--ease-out), opacity 320ms var(--ease-out), visibility 0s 320ms; }
 }
 
 /* Fuß: ruhig, eine feine Linie, drei Zonen */
