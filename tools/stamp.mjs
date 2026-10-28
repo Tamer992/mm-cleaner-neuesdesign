@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 
 const hash = (f) => createHash("sha1").update(readFileSync(f)).digest("hex").slice(0, 8);
-const dateien = ["assets/css/style.css", "assets/js/main.js", "assets/js/calc.js"];
+const dateien = ["assets/css/style.css", "assets/js/main.js", "assets/js/kalender.js"];
 const v = Object.fromEntries(dateien.map((f) => [f, hash(f)]));
 
 for (const seite of ["index.html", "impressum.html", "datenschutz.html"]) {

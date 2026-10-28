@@ -12,10 +12,11 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
 <link rel="icon" href="favicon.png" type="image/png">
+<link rel="preload" href="assets/img/gastro-boden.jpg" as="image">
 <link rel="preload" href="assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=4ca9d968">
-<script src="assets/js/main.js?v=285a3348" type="module"></script>
+<link rel="stylesheet" href="assets/css/style.css?v=76f08dd9">
+<script src="assets/js/main.js?v=5dbdaaa5" type="module"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -42,7 +43,6 @@
       <a href="#ergebnisse">Referenzen</a>
       <a href="#ablauf">Ablauf</a>
       <a href="#branchen">Branchen</a>
-      <a href="#richtwert">Richtwert</a>
       <a href="#fragen">Fragen</a>
     </nav>
     <div class="nav__act">
@@ -55,7 +55,6 @@
       <a href="#ergebnisse">Referenzen</a>
     <a href="#ablauf">Ablauf</a>
     <a href="#branchen">Branchen</a>
-    <a href="#richtwert">Richtwert</a>
     <a href="#fragen">Fragen</a>
     <a class="btn btn--accent" href="#kontakt">Angebot anfordern</a>
     <a class="menu__tel" href="tel:+497256000000">07256 000 000</a>
@@ -71,55 +70,11 @@
     <p class="lead">Gebäudereinigung für Büros, Praxen und Produktion. Feste Ansprechperson, schriftliches Leistungsverzeichnis, Festpreis pro Monat.</p>
     <div class="hero__cta">
       <a class="btn btn--accent btn--lg" href="#kontakt">Angebot anfordern</a>
-      <a class="btn btn--ghost btn--lg" href="#richtwert">Richtwert berechnen</a>
+      <a class="btn btn--ghost btn--lg" href="#leistungen">Leistungen ansehen</a>
     </div>
   </div>
 
-  <figure class="plan" aria-labelledby="plan-cap">
-    <svg class="plan__svg" viewBox="0 0 640 500" role="group" aria-label="Grundriss eines Bürogeschosses mit Reinigungsbereichen">
-      <defs>
-        <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="8" stroke="var(--line)" stroke-width="1.5"/>
-        </pattern>
-      </defs>
-      <!-- Außenhülle -->
-      <rect x="20" y="20" width="600" height="460" rx="6" class="plan__shell"/>
-      <!-- Räume: Daten in data-Attributen, Zustand per CSS -->
-      <g class="room" data-room="empfang" tabindex="0" role="button" aria-label="Empfang">
-        <rect x="32" y="32" width="170" height="130"/>
-        <text x="117" y="102">Empfang</text>
-      </g>
-      <g class="room" data-room="buero" tabindex="0" role="button" aria-label="Großraumbüro">
-        <rect x="210" y="32" width="400" height="210"/>
-        <text x="410" y="142">Großraumbüro</text>
-      </g>
-      <g class="room" data-room="flur" tabindex="0" role="button" aria-label="Flur">
-        <rect x="32" y="170" width="170" height="72"/>
-        <text x="117" y="212">Flur</text>
-      </g>
-      <g class="room" data-room="besprechung" tabindex="0" role="button" aria-label="Besprechungsräume">
-        <rect x="32" y="250" width="210" height="230"/>
-        <text x="137" y="370">Besprechung</text>
-      </g>
-      <g class="room" data-room="kueche" tabindex="0" role="button" aria-label="Küche">
-        <rect x="250" y="250" width="170" height="230"/>
-        <text x="335" y="370">Küche</text>
-      </g>
-      <g class="room" data-room="sanitaer" tabindex="0" role="button" aria-label="Sanitärbereich">
-        <rect x="428" y="250" width="182" height="110"/>
-        <text x="519" y="310">Sanitär</text>
-      </g>
-      <g class="room" data-room="lager" tabindex="0" role="button" aria-label="Lager und Technik">
-        <rect x="428" y="368" width="182" height="112"/>
-        <text x="519" y="429">Lager</text>
-      </g>
-    </svg>
-    <figcaption id="plan-cap" class="plan__cap" aria-live="polite">
-      <strong class="plan__name">Großraumbüro</strong>
-      <span class="plan__what">Böden saugen und feucht wischen, Arbeitsplätze und Kontaktflächen abwischen, Papierkörbe leeren.</span>
-      <span class="plan__freq">Täglich</span>
-    </figcaption>
-  </figure>
+  <figure class="hero__img"><img src="assets/img/gastro-boden.jpg" alt="Restaurant mit schwarz-weißem Fliesenboden, gereinigt" width="1078" height="1075" fetchpriority="high"></figure>
 </section>
 
 <!-- LEISTUNGEN -->
@@ -181,6 +136,7 @@
     <li>
       <h3>Begehen</h3>
       <p>Wir sehen uns das Objekt vor Ort an, messen Flächen und klären Zugänge, Alarm und Reinigungszeiten.</p>
+      <p><a class="ln" href="#termin">Begehungstag wählen</a></p>
     </li>
     <li>
       <h3>Festschreiben</h3>
@@ -258,50 +214,6 @@
   </dl>
 </section>
 
-<!-- RICHTWERT -->
-<section class="sec richtwert" id="richtwert">
-  <div class="wrap richtwert__in">
-    <div class="richtwert__intro">
-      <h2 class="sec__h">Richtwert in 20 Sekunden.</h2>
-      <p class="muted">Grobe Einordnung vor der Begehung. Das verbindliche Angebot folgt nach dem Termin vor Ort.</p>
-    </div>
-
-    <form class="calc" id="calc" aria-label="Richtwert-Rechner" novalidate>
-      <fieldset>
-        <legend>Objektart</legend>
-        <div class="seg" role="radiogroup">
-          <label><input type="radio" name="art" value="buero" checked><span>Büro</span></label>
-          <label><input type="radio" name="art" value="praxis"><span>Praxis</span></label>
-          <label><input type="radio" name="art" value="handel"><span>Handel</span></label>
-          <label><input type="radio" name="art" value="industrie"><span>Industrie</span></label>
-        </div>
-      </fieldset>
-
-      <div class="field">
-        <label for="flaeche">Fläche <output id="flaeche-out" for="flaeche">500 m²</output></label>
-        <input id="flaeche" name="flaeche" type="range" min="50" max="5000" step="50" value="500">
-      </div>
-
-      <fieldset>
-        <legend>Reinigung pro Woche</legend>
-        <div class="seg" role="radiogroup">
-          <label><input type="radio" name="turnus" value="1"><span>1x</span></label>
-          <label><input type="radio" name="turnus" value="2"><span>2x</span></label>
-          <label><input type="radio" name="turnus" value="3"><span>3x</span></label>
-          <label><input type="radio" name="turnus" value="5" checked><span>5x</span></label>
-        </div>
-      </fieldset>
-
-      <div class="calc__res" aria-live="polite">
-        <span class="calc__label">Richtwert pro Monat, netto</span>
-        <span class="calc__val" id="res">1.470 bis 1.990 €</span>
-        <span class="calc__hint" id="res-hint">Etwa 54 Stunden Reinigungszeit im Monat</span>
-      </div>
-      <a class="btn btn--accent" href="#kontakt" id="calc-go">Angebot dazu anfordern</a>
-    </form>
-  </div>
-</section>
-
 <!-- FAQ -->
 <section class="sec wrap faq" id="fragen">
   <h2 class="sec__h">Fragen, die vor der Unterschrift kommen.</h2>
@@ -334,7 +246,7 @@
   <div class="wrap kontakt__in">
     <div class="kontakt__copy">
       <h2>Wir melden uns innerhalb eines Werktags.</h2>
-      <p>Schildern Sie Ihr Objekt in drei Sätzen. Wir rufen zurück und vereinbaren die Begehung.</p>
+      <p>Schildern Sie Ihr Objekt in drei Sätzen und wählen Sie einen Tag für die Begehung. Wir bestätigen den Termin.</p>
       <div class="kontakt__direct">
         <p class="tel"><span class="tel__label">Rufen Sie uns an</span><a class="tel__nr" href="tel:+497256000000">07256 000 000</a></p>
         <figure class="qr"><img src="assets/img/qr-anruf.svg" alt="QR-Code zum Anrufen" width="148" height="148"><figcaption>Mit dem Handy scannen und direkt anrufen.</figcaption></figure>
@@ -364,9 +276,26 @@
         </div>
       </div>
       <div class="field">
-        <label for="f-text">Objekt und Wunschtermin</label>
-        <textarea id="f-text" name="text" rows="4" placeholder="Zum Beispiel: Arztpraxis, 280 m², Reinigung abends, Start im Januar"></textarea>
+        <label for="f-text">Ihr Objekt</label>
+        <textarea id="f-text" name="text" rows="3" placeholder="Zum Beispiel: Arztpraxis, 280 m², Reinigung abends, Start im Januar"></textarea>
       </div>
+      <fieldset class="termin" id="termin">
+        <legend>Wunschtermin für die Begehung <span>(freiwillig)</span></legend>
+        <div class="cal" data-cal>
+          <div class="cal__head">
+            <button type="button" class="cal__nav" data-dir="-1" aria-label="Vorheriger Monat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <p class="cal__title" aria-live="polite"></p>
+            <button type="button" class="cal__nav" data-dir="1" aria-label="Nächster Monat"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+          <div class="cal__grid"></div>
+          <div class="seg cal__zeit" role="radiogroup" aria-label="Tageszeit">
+            <label><input type="radio" name="zeit" value="vormittags" checked><span>Vormittags</span></label>
+            <label><input type="radio" name="zeit" value="nachmittags"><span>Nachmittags</span></label>
+          </div>
+          <p class="cal__sel" aria-live="polite">Wählen Sie einen Tag. Wir bestätigen den Termin per Mail oder Telefon.</p>
+          <input type="hidden" name="termin">
+        </div>
+      </fieldset>
       <label class="check">
         <input type="checkbox" name="dsgvo" required>
         <span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung der Anfrage zu.</span>

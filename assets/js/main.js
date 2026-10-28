@@ -1,31 +1,7 @@
-import { richtwert } from "./calc.js";
+import { istBegehungstag } from "./kalender.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-
-/* Grundriss: Raum wählen, Beschreibung austauschen */
-const ROOMS = {
-  empfang: ["Empfang", "Böden wischen, Theke und Glasflächen abwischen, Sitzbereich ordnen.", "Täglich"],
-  buero: ["Großraumbüro", "Böden saugen und feucht wischen, Arbeitsplätze und Kontaktflächen abwischen, Papierkörbe leeren.", "Täglich"],
-  flur: ["Flur", "Böden saugen und wischen, Türen und Handläufe abwischen.", "Täglich"],
-  besprechung: ["Besprechungsräume", "Tische und Stühle abwischen, Böden saugen, Whiteboards reinigen.", "3x pro Woche"],
-  kueche: ["Küche", "Arbeitsflächen, Spüle und Geräte außen reinigen, Kühlschrank wöchentlich auswischen.", "Täglich"],
-  sanitaer: ["Sanitärbereich", "Desinfizierende Reinigung aller Flächen, Verbrauchsmaterial auffüllen.", "Täglich"],
-  lager: ["Lager und Technik", "Böden kehren und feucht wischen.", "1x pro Woche"],
-};
-const rooms = $$(".room");
-const cap = { name: $(".plan__name"), what: $(".plan__what"), freq: $(".plan__freq") };
-function pick(el) {
-  const [name, what, freq] = ROOMS[el.dataset.room];
-  rooms.forEach((r) => { r.classList.toggle("is-on", r === el); r.setAttribute("aria-pressed", r === el); });
-  cap.name.textContent = name; cap.what.textContent = what; cap.freq.textContent = freq;
-}
-rooms.forEach((r) => {
-  r.setAttribute("aria-pressed", "false");
-  r.addEventListener("click", () => pick(r));
-  r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(r); } });
-});
-pick($('[data-room="buero"]'));
 
 /* Tabs mit gleitender Markierung */
 const tabs = $("[data-tabs]");
@@ -62,34 +38,6 @@ if (tabs) {
   addEventListener("resize", () => place(cur()));
 }
 
-/* Richtwert */
-const calc = $("#calc");
-if (calc) {
-  const range = $("#flaeche");
-  const fmt = new Intl.NumberFormat("de-DE");
-  const state = () => ({
-    art: calc.elements.art.value,
-    flaeche: +range.value,
-    turnus: +calc.elements.turnus.value,
-  });
-  const render = () => {
-    const s = state();
-    const r = richtwert(s);
-    $("#flaeche-out").textContent = fmt.format(s.flaeche) + " m²";
-    range.style.setProperty("--fill", ((s.flaeche - range.min) / (range.max - range.min)) * 100 + "%");
-    $("#res").textContent = `${fmt.format(r.von)} bis ${fmt.format(r.bis)} €`;
-    $("#res-hint").textContent = `Etwa ${fmt.format(r.stunden)} Stunden Reinigungszeit im Monat`;
-  };
-  calc.addEventListener("input", render);
-  render();
-  $("#calc-go").addEventListener("click", () => {
-    const s = state();
-    const art = { buero: "Büro", praxis: "Praxis", handel: "Handel", industrie: "Industrie" }[s.art];
-    const t = $("#f-text");
-    if (!t.value) t.value = `${art}, ca. ${fmt.format(s.flaeche)} m², ${s.turnus}x pro Woche. Richtwert: ${$("#res").textContent}.`;
-  });
-}
-
 /* Formular */
 const form = $("#form");
 if (form) {
@@ -111,6 +59,7 @@ if (form) {
     }
     const data = Object.fromEntries(new FormData(form));
     delete data.dsgvo;
+    delete data.zeit;
     const endpoint = form.dataset.endpoint;
     if (endpoint) {
       try {
@@ -122,7 +71,7 @@ if (form) {
       }
     } else {
       // shortcut: ohne Backend per mailto, auf Formular-Endpunkt umstellen sobald vorhanden
-      const body = `Name: ${data.name}\nUnternehmen: ${data.firma}\nE-Mail: ${data.mail}\nTelefon: ${data.tel}\n\n${data.text}`;
+      const body = `Name: ${data.name}\nUnternehmen: ${data.firma}\nE-Mail: ${data.mail}\nTelefon: ${data.tel}\nWunschtermin Begehung: ${data.termin || "keiner"}\n\n${data.text}`;
       location.href = `mailto:info@mmcleaner.de?subject=${encodeURIComponent("Angebotsanfrage")}&body=${encodeURIComponent(body)}`;
     }
     $("#form-ok").hidden = false;
@@ -190,5 +139,70 @@ if (ref) {
       call.classList.toggle("is-off", seen.size > 0);
     }, { threshold: 0.4 });
     [$(".hero"), $("#kontakt")].forEach((s) => s && io.observe(s));
+  }
+}
+
+/* Kalender: Begehungstag wählen */
+{
+  const cal = $("[data-cal]");
+  if (cal) {
+    const grid = $(".cal__grid", cal), title = $(".cal__title", cal), sel = $(".cal__sel", cal);
+    const feld = $('input[name="termin"]', cal);
+    const nav = $$(".cal__nav", cal);
+    const heute = new Date();
+    const ersterAktuell = new Date(heute.getFullYear(), heute.getMonth(), 1);
+    const letzter = new Date(heute.getFullYear(), heute.getMonth() + 5, 1);
+    const fmtTag = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const fmtMonat = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
+    let monat = ersterAktuell, gewaehlt = null;
+    const gleich = (a, b) => a && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    const zeit = () => cal.querySelector('input[name="zeit"]:checked').value;
+
+    const info = () => {
+      if (!gewaehlt) { feld.value = ""; sel.textContent = "Wählen Sie einen Tag. Wir bestätigen den Termin per Mail oder Telefon."; return; }
+      feld.value = fmtTag.format(gewaehlt) + ", " + zeit();
+      sel.replaceChildren("Ihr Wunsch: ", Object.assign(document.createElement("strong"), { textContent: feld.value }), ". Wir bestätigen per Mail oder Telefon.");
+    };
+    const render = (fokus) => {
+      title.textContent = fmtMonat.format(monat);
+      nav[0].disabled = monat <= ersterAktuell;
+      nav[1].disabled = monat >= letzter;
+      grid.replaceChildren();
+      ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].forEach((t) => grid.append(Object.assign(document.createElement("span"), { className: "cal__wd", textContent: t })));
+      for (let i = 0; i < (monat.getDay() + 6) % 7; i++) grid.append(document.createElement("span"));
+      const n = new Date(monat.getFullYear(), monat.getMonth() + 1, 0).getDate();
+      for (let t = 1; t <= n; t++) {
+        const d = new Date(monat.getFullYear(), monat.getMonth(), t);
+        const b = Object.assign(document.createElement("button"), { type: "button", className: "cal__d", textContent: t });
+        b.setAttribute("aria-label", fmtTag.format(d));
+        b.setAttribute("aria-pressed", gleich(gewaehlt, d));
+        b.disabled = !istBegehungstag(d, heute);
+        if (gleich(heute, d)) b.dataset.heute = "";
+        b.dataset.t = t;
+        grid.append(b);
+      }
+      if (fokus) grid.querySelector(".cal__d:not(:disabled)")?.focus();
+    };
+    grid.addEventListener("click", (e) => {
+      const b = e.target.closest(".cal__d");
+      if (!b || b.disabled) return;
+      gewaehlt = new Date(monat.getFullYear(), monat.getMonth(), +b.dataset.t);
+      $$(".cal__d", grid).forEach((x) => x.setAttribute("aria-pressed", x === b));
+      info();
+    });
+    grid.addEventListener("keydown", (e) => {
+      const tage = $$(".cal__d", grid), i = tage.indexOf(document.activeElement);
+      const schritt = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+      if (i < 0 || schritt === undefined) return;
+      e.preventDefault();
+      for (let k = i + schritt; k >= 0 && k < tage.length; k += schritt) { if (!tage[k].disabled) { tage[k].focus(); break; } }
+    });
+    nav.forEach((b) => b.addEventListener("click", () => { monat = new Date(monat.getFullYear(), monat.getMonth() + +b.dataset.dir, 1); render(); }));
+    cal.addEventListener("change", (e) => { if (e.target.name === "zeit") info(); });
+    cal.closest("form").addEventListener("reset", () => { gewaehlt = null; monat = ersterAktuell; setTimeout(() => { render(); info(); }); });
+    // erster Monat ohne wählbaren Tag: gleich zum nächsten
+    render();
+    if (!$(".cal__d:not(:disabled)", grid) && monat < letzter) { monat = new Date(monat.getFullYear(), monat.getMonth() + 1, 1); render(); }
+    info();
   }
 }
